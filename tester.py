@@ -56,6 +56,9 @@ def comparator(model_file, input_file, output_file, outputdir=OUTPUT_DIR):
     outputs = []
     actual_outputs = []
     for inp_line in inputs:
+        inp_list = inp_line.split(' ')
+        if len(inp_list) == 4 and (inp_list[0] == "FlexiBSC" or inp_list[0] == "mcBSC"):
+            continue;
         outp = True
         for mod_line in model:
             inp_line = inp_line.strip()

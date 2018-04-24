@@ -71,6 +71,7 @@ class Drain:
 
 		seqLen = len(seq)
 		if seqLen not in rn.childD:
+			print("no len")
 			return retLogClust
 
 		parentn = rn.childD[seqLen]
@@ -275,8 +276,9 @@ class Drain:
 				#cookedLine = re.sub('node-[0-9]+','node-',cookedLine) #For HPC only
 
 				logmessageL = cookedLine.split()
-
+				#print(logmessageL)
 				matchCluster = self.treeSearch(rootNode, logmessageL)
+				#print(matchCluster)
 
 				#Match no existing log cluster
 				if matchCluster is None:
