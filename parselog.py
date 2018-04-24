@@ -5,6 +5,9 @@ import numpy as np
 import sys
 import gc
 
+INPUT_DIR = sys.argv[1]
+OUTPUT_DIR = sys.argv[2]
+
 class Logcluster:
 	def __init__(self, logTemplate='', logIDL=None):
 		self.logTemplate = logTemplate
@@ -206,7 +209,7 @@ class Drain:
 
 	def outputResult(self, logClustL):
 		writeTemplate = open(self.para.savePath + self.para.saveTempFileName, 'w')
-
+		print('OUTPUTTING: ',self.para.savePath + self.para.saveTempFileName)
 		idx = 1
 		for logClust in logClustL:
 			writeTemplate.write(' '.join(logClust.logTemplate) + '\n')
@@ -231,7 +234,7 @@ class Drain:
 		else:
 			pStr += node.digitOrtoken
 
-		print pStr
+		print(pStr)
 
 		if node.depth == self.para.depth:
 			return 1
@@ -258,8 +261,8 @@ class Drain:
 				logID = int(line.split('\t')[0])
 				if(len(line.strip().split('\t')) == 1):
 					continue
-				# print line
-				# print "h", line.strip().split('\t')
+				# print(line
+				# print("h", line.strip().split('\t')
 				logmessageL = line.strip().split('\t')[1].split()
 				logmessageL = [word for i, word in enumerate(logmessageL) if i not in self.para.removeCol]
 
@@ -291,13 +294,14 @@ class Drain:
 				
 				count += 1
 				if count%5000 == 0:
-					print count
+					print(count)
 
 
 		if not os.path.exists(self.para.savePath):
 			os.makedirs(self.para.savePath)
 		else:
-			self.deleteAllFiles(self.para.savePath)
+			# self.deleteAllFiles(self.para.savePath)
+			pass
 
 		self.outputResult(logCluL)
 		t2 = time.time()
@@ -307,64 +311,41 @@ class Drain:
 		gc.collect()
 		return t2-t1
 
-# HDFS parameters for example
+
+def recursive_parser(rootdir=INPUT_DIR):
+	for subdir, dirs, files in os.walk(rootdir):
+		for file in files:
+			print('subdir :',subdir)
+			print('processing file:',file)
+			logName=file		#input file to parse
+			saveTempFileName='template_'+logName
+
+			parserPara = Para(path=subdir, st=st, logName=logName, savePath=savePath, removeCol=removeCol, rex=rex, depth=depth, saveTempFileName=saveTempFileName)	
+			myParser = Drain(parserPara)
+			myParser.mainProcess()
+
+
 path = './'
 removeCol = [] #[0,1,2,3,4] for HDFS
 st = 0.8
-depth = 5
+# depth = 5
+depth = 3
 # rex = ['blk_(|-)[0-9]+','(/|)([0-9]+\.){3}[0-9]+(:[0-9]+|)(:|)']
 rex = [('blk_(|-)[0-9]+', 'rx_idk'), ('([0-9]+\.){3}[0-9]+\/[0-9]+', 'rx_ipws'), ('(/|)([0-9]+\.){3}[0-9]+(:[0-9]+|)(:|)', 'rx_ip'), ('([0-9]+\-){2}[0-9]+', 'rx_date'), ('([0-9]+\:){2}[0-9]+', 'rx_time'), ('\ ([0-9]+)(\ |$)', ' rx_num '), ('^([0-9]+)\ ', 'rx_num '), ('\t([0-9]+)(\t|$)', '\trx_num\t'), ('^([0-9]+)\t', '\trx_num\t'),           ('([0-9])', '')]
 
 maxChild=100
-logName=sys.argv[1]		#input file to parse
+# logName=sys.argv[1]		#input file to parse
 removable=True
-savePath=sys.argv[2]+'/'	#save template folder
-saveFileName=sys.argv[1] #'template'
-saveTempFileName='template_'+sys.argv[1].split('/')[-1]
 
-parserPara = Para(path=path, st=st, logName=logName, savePath=savePath, removeCol=removeCol, rex=rex, depth=depth, saveTempFileName=saveTempFileName)	
-myParser = Drain(parserPara)
-myParser.mainProcess()
+savePath = OUTPUT_DIR + '/'	#save template folder
+if not os.path.exists(savePath):
+	os.makedirs(savePath)
 
+recursive_parser()
 
+# saveFileName=sys.argv[1] #'template'
+# saveTempFileName='template_'+sys.argv[1].split('/')[-1]
 
-
-
-#Parameters for experiments in the ICWS submission
-
-# These are the key parameters used by these log parsers, some minor parameters are not presented here.
-# For those parameters, you can use the default values in our took kit, or randomly assign a value.
-
-# LKE
-#############################################################################
-#				BGL		HPC		HDFS		Zookeeper		Proxifier
-# threshold2	  5 	  4		   3				2 				2
-#############################################################################
-
-
-# IPLoM
-#############################################################################
-#				BGL		HPC		HDFS		Zookeeper		Proxifier
-# ct 			0.4	  0.175		0.35			  0.4			  0.6
-# lowerBound   0.25    0.25		0.25			  0.7			 0.25
-#############################################################################
-
-
-# SHISO
-#############################################################################
-# all data sets (same setting, because performance is not sensitive)	
-# c               4
-# tm 			0.1
-# tr  			0.8
-# ts 		   0.35
-#############################################################################
-
-
-# Spell
-#############################################################################
-#				BGL		HPC		HDFS		Zookeeper		Proxifier
-# tau			0.3    0.45		0.29			  0.4 			  0.4
-#############################################################################
-
-
-
+# parserPara = Para(path=path, st=st, logName=logName, savePath=savePath, removeCol=removeCol, rex=rex, depth=depth, saveTempFileName=saveTempFileName)	
+# myParser = Drain(parserPara)
+# myParser.mainProcess()

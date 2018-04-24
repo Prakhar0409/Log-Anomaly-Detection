@@ -75,17 +75,17 @@ def walk_directory(rootdir=INPUT_FOLDER):
 					filetypes[filetype].append(filename)
 				# filetypes.append(filetype)
 
-	# print(filetypes['IP_configurations.txt'])
+	# print(filetypes['BCM00000.log'])
+	# print(filetypes.keys())
 	return filetypes
 
 filetypes = walk_directory()
-
+# sys.exit(-1)
 # print(filetypes.keys())
 # print(filetypes['SUPERV0.HW'])
 # sys.exit(-1)
 directory = OUTPUT_FOLDER
 if not os.path.exists(directory):
-	# print('yo')
 	os.makedirs(directory)
 
 for ftype in filetypes:
