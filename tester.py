@@ -15,6 +15,9 @@ f.close()
 outputs = []
 actual_outputs = []
 for inp_line in inputs:
+    inp_list = inp_line.split(' ')
+    if len(inp_list) == 4 and inp_list[0] == "FlexiBSC":
+        continue;
     outp = True
     for mod_line in model:
         inp_line = inp_line.strip()
@@ -41,6 +44,9 @@ for inp_line in inputs:
     if outp == True:
         outputs.append(inp_line)
 
+if len(outputs) == 0:
+    return
+    
 f = open(OUT_FILE, 'w')
 for out in outputs:
     f.write(out + "\n")
