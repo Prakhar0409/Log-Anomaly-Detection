@@ -68,6 +68,7 @@ class Drain:
 
 		seqLen = len(seq)
 		if seqLen not in rn.childD:
+			print("no len")
 			return retLogClust
 
 		parentn = rn.childD[seqLen]
@@ -272,8 +273,9 @@ class Drain:
 				#cookedLine = re.sub('node-[0-9]+','node-',cookedLine) #For HPC only
 
 				logmessageL = cookedLine.split()
-
+				print(logmessageL)
 				matchCluster = self.treeSearch(rootNode, logmessageL)
+				print(matchCluster)
 
 				#Match no existing log cluster
 				if matchCluster is None:
@@ -311,7 +313,7 @@ class Drain:
 path = './'
 removeCol = [] #[0,1,2,3,4] for HDFS
 st = 0.8
-depth = 5
+depth = 3
 # rex = ['blk_(|-)[0-9]+','(/|)([0-9]+\.){3}[0-9]+(:[0-9]+|)(:|)']
 rex = [('blk_(|-)[0-9]+', 'rx_idk'), ('([0-9]+\.){3}[0-9]+\/[0-9]+', 'rx_ipws'), ('(/|)([0-9]+\.){3}[0-9]+(:[0-9]+|)(:|)', 'rx_ip'), ('([0-9]+\-){2}[0-9]+', 'rx_date'), ('([0-9]+\:){2}[0-9]+', 'rx_time'), ('\ ([0-9]+)(\ |$)', ' rx_num '), ('^([0-9]+)\ ', 'rx_num '), ('\t([0-9]+)(\t|$)', '\trx_num\t'), ('^([0-9]+)\t', '\trx_num\t'),           ('([0-9])', '')]
 
