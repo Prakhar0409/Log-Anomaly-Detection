@@ -1,10 +1,16 @@
-Preprocessing Logs:-
-First, we separated each log file into by the output of commands run in it. We identified lines having commands as ones starting with the prompt i.e. "<", having a command starting with "Z" and the line ending by ";". We extracted all outputs of the same  command from the set of golden logs and created the files <Command Name>_<File Type>.txt. Thus the outputs of same command present in SWU_0.txt, SWU_1.txt etc will be in same file. We call these preprocessed files.
 
+## Pre-processing Logs Step
+First, we separated each log file into separate files by the output of commands run in it. We identified lines having commands as ones starting with the prompt i.e. "<", having a command starting with "Z" and the line ending by ";". We extracted all outputs of the same  command on similar files from the set of golden logs and created the files <Command Name>_<File Type>.txt. Thus the outputs of same command present in SWU_0.txt, SWU_1.txt etc will be in same file. We call these preprocessed files.
 
-Processing Logs:-
-We created some regex using domain knowledge of general logs to eliminate informaion that might be redundant or might not be able to help us in finding anomalies. We took the following steps:-
-- Relpaced IP adresses by "rx_ip"
+## Processing Logs Step (Training)
+
+We use a clustering based method to process the logs in an unsupervised fashion. We go with such an approach to have a most general anomaly detection system which is useful even in the case of a new kind of error that appears outside the training errors given to us. Our clustering method is based on forming a tree-like data structure from the data. 
+
+We apply an online parsing algorithm on each of the preprocessed files to learn a list of log sentence templates in these files. Log templates are patterns that appear in a recurring fashion with a few positional arguments varying. The motivation is to find the types of sentences (templates) appearing in the logs. The lines in the log files are first broken down into tokens. The parser tries to find patterns and identify the constant and variable part in each of the lines in log file. It then learns templates like "VLAN UP rx_num LIM *". Here * is the variable part, that the parser found to be changing across many instances of this log line.
+
+It then creates a tree, with log groups at the leaves of the tree. Whenever we encounter a new log line, we try to match it with a log group at one of the leaves. If one of the log group matches with a similarity over a given threshold, this log is added to it, else a new log group is added to it. The threshold is a hyperparameter. It can be varied by the user to generate lesser or higher rate of anomaly detection. The inner nodes of the tree are to simply reduce search space while searching for log group by dividing them into groups based on log length, first token of the log etc. This approach is based on the DRAIN log parsers paper.
+
+We also created some advanced regex to act in the cases of most general logs to eliminate informaion that might be redundant or might not be able to help us in finding anomalies. We took the following steps:-
 - Replaced dates and times by "rx_date" and "rx_time"
 - Removed the hexadecimal numbers which represented various encoded messages
 - Replaces User Ids and Profile Names
@@ -12,11 +18,10 @@ etc.
 
 This allowed us to ignore the variation in these unimportant values among logs.
 
-Next we applied an online parsing algorithm on each of these files to learn a list of log sentence templates in these files. The motivation is to find the types of sentences (templates) appearing in the logs. The lines in the log files are first broken down nto tokens. The parser tries to find patterns and identify the constant and variable part in each of the lines in log file. It then learns templates like "VLAN UP rx_num LIM *". Here * is the variable part, that the parser found to be chaging across many instances of this log line.
+## Finding/Identifying Anomalies (Inference)
 
-The algorithm we use for parsing logs, creates a tree, with log groups at the leaves of the tree. Whenever we encounter a new log line, we try to match it with a log group at one of the leaves. If one of the log group matches with a similarity over a given threshold, this log is added to it, else a new log group is added to it. The threshold is a hyperparameter. The inner nodes of the tree are to simply reduce search space while searching for log group by dividing them into groups based on log length, first token of the log etc. This approch is based on the DRAIN log parser.
+An anomaly is said to occur when the log output of a run is significantly different than the log output of the Golden Logs. Given a new test file/test folder (collection of new test files), to be able to figure out all such anomalous instances, we preprocess the new test file as described above and run the log parser on it to get the relevant templates in it. Anomalous data either produces new kinds of templates not already present in the templates generated by the Golden Logs data or misses one or more of them. These new templates would be created due to presence of new words or numbers, which were absent in Golden Logs and thus form anomalies for us.
 
+## Post-processing Step 
 
-Finding Anomalies:-
-When an anomaly occurs, we expect the log to have lines which are different than the ones. Thus if we were to preprocess it as above and run the log parser on these files to get the templates, we expect it to generate new kinds of templates that were not learnt when the templates were generated for Golden Log files. These new templates would be created due to presence of new words or numbers, which were absent in Golden Logs. Thus we classify these newly created templates as anomalies.
-Next we find the log lines in the original test files that match these new templates and output them as the anomalous log lines.
+In this step, we identify the log files and the relevant lines in the original test files that match these generated the new templates in the previous steps. These are the lines that generated the anomalous log templates and thus are the anomalies from our data. We thus output them as the anomalous log lines.
