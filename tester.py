@@ -85,6 +85,8 @@ def comparator(model_file, input_file, output_file, outputdir=OUTPUT_DIR):
         if outp == True:
             outputs.append(inp_line)
 
+    if len(outputs) == 0:
+        return
     f = open(outputdir+'/'+output_file, 'w')
     for out in outputs:
         f.write(out + "\n")

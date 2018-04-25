@@ -1,8 +1,0 @@
-< ZQRI;
-FlexiBSC BSBT rx_date rx_time
-VLAN UP rx_num LIM *
-EL UP rx_num LMC *
-OMUSIG OMUSIG
-BOND UP rx_num
-->IL IL
-IND UP rx_num
