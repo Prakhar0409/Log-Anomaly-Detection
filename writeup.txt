@@ -4,10 +4,12 @@ We created some regex using domain knowledge of general logs to eliminate inform
 - Relpaced IP adresses by "rx_ip"
 - Replaced dates and times by "rx_date" and "rx_time"
 - Replaced numbers by "rx_num"
+- Removed the hexadecimal numbers which represented various encoded messages
+- Replaces User Ids and Profile Names
 
-This allowed us to ignore the variation in these values among logs.
+This allowed us to ignore the variation in these unimportant values among logs.
 
-Next we separated each log file into by the output of commands run in it. We identified lines having commands as ones starting with the prompt i.e. "<", having a command starting with "Z" and the line ending by ";". We extracted all command outputs from the set of logs and created the files <Command Name>_<File Type>.txt. Thus the outputs of same command present in SWU_0.txt, SWU_1.txt etc will be in same file.
+Next we separated each log file into by the output of commands run in it. We identified lines having commands as ones starting with the prompt i.e. "<", having a command starting with "Z" and the line ending by ";". We extracted all command outputs from the set of logs and created the files <Command Name>_<File Type>.txt. Thus the outputs of same command present in SWU_0.txt, SWU_1.txt etc will be in same file. We call these preprocessed files.
 
 Next we applied an online parsing algorithm on each of these files to get a list of templates in these files. The parser tries to identify the constant and variable part in each of the lines in log file. It then creates templates like "VLAN UP rx_num LIM *". Here * is the variable part, that the parser found to be chaging across many instances of this log line.
 
