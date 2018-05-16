@@ -256,6 +256,9 @@ class Drain:
 		t1 = time.time()
 
 		#todo: check if exists
+		# Load the pickle into the variable to allow further learning
+		# and growing of the tree
+
 		print(OLD_OUTPUT_DIR + 'models/' + saveTempFileName + '.rn.pk')
 		f = open(OLD_OUTPUT_DIR + 'models/' + saveTempFileName + '.rn.pk', 'rb')
 		rootNode = pickle.load(f)
@@ -270,6 +273,7 @@ class Drain:
 
 		with open(self.para.path+self.para.logName) as lines:
 			count = 0
+			# Ask user wetehr to add ths to templates
 			for line in lines:
 				ch = input('Is this an anomaly? \n' + line + '\n(y/n/q)\n:')
 				if ch=='y':

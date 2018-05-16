@@ -306,8 +306,10 @@ class Drain:
             # self.deleteAllFiles(self.para.savePath)
             pass
 
+        # Print the template file
         self.outputResult(logCluL)
 
+        # Save the model to pickle files
         f = open(saveModelsPath + saveTempFileName + '.rn.pk', 'wb')
         pickle.dump(rootNode, f)
         f.close()
@@ -326,7 +328,8 @@ class Drain:
         gc.collect()
         return t2-t1
 
-
+# Iterate over all files in inp dir and generate templates
+# and model for each of the fila.
 def recursive_parser(rootdir=INPUT_DIR):
     for subdir, dirs, files in os.walk(rootdir):
         for file in files:
@@ -346,6 +349,8 @@ st = 0.8
 # depth = 5
 depth = 3
 # rex = ['blk_(|-)[0-9]+','(/|)([0-9]+\.){3}[0-9]+(:[0-9]+|)(:|)']
+
+#These are regexes to clean dataset
 rex = [('blk_(|-)[0-9]+', 'rx_idk'), ('([0-9]+\.){3}[0-9]+\/[0-9]+', 'rx_ipws'), ('(/|)([0-9]+\.){3}[0-9]+(:[0-9]+|)(:|)', 'rx_ip'), ('([0-9]+\-){2}[0-9]+', 'rx_date'), ('([0-9]+\:){2}[0-9]+', 'rx_time'), ('\ ([0-9]+)(\ |$)', ' rx_num '), ('^([0-9]+)\ ', 'rx_num '), ('\t([0-9]+)(\t|$)', '\trx_num\t'), ('^([0-9]+)\t', '\trx_num\t'),           ('([0-9])', ''), (r'\b([0-9ABCDEF]{2} )([0-9ABCDEF]{2} )*[0-9ABCDEF]{2}\b','$'), (r'\b([0-9ABCDEF]{8} )([0-9ABCDEF]{8} )*[0-9ABCDEF]{8}\b', '$'), ('USER ID:( |\t)*[A-Z0-9a-z]+', 'rx_uid'), ('PROFILE NAME:( |\t)*[A-Z0-9a-z]+','rx_pname'), (r'\b([0-9ABCDEF]{4} )([0-9ABCDEF]{4} )*[0-9ABCDEF]{4}\b','$'), ('\/\*.*\*\/','')]
 
 maxChild=100
@@ -356,10 +361,11 @@ savePath = OUTPUT_DIR + '/' #save template folder
 if not os.path.exists(savePath):
     os.makedirs(savePath)
 
-saveModelsPath = OUTPUT_DIR + '/models/'    #save template folder
+saveModelsPath = OUTPUT_DIR + '/models/'    #save template models folder
 if not os.path.exists(saveModelsPath):
     os.makedirs(saveModelsPath)
 
+# Start the code
 recursive_parser()
 
 # saveFileName=sys.argv[1] #'template'
