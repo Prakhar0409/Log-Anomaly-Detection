@@ -59,7 +59,7 @@ def zero_digits(s):
 filetypes = {}		# file types vs names of file in that type
 def walk_directory(rootdir=INPUT_FOLDER):
 	# filetypes = []
-	EXCLUDES = ['.zip', '.ZIP', '.bin','.BIN', '.rar', '.MAP', '.BAK', '.BBX', '.tgz', '.DAT', '.SHL', 'TEST', '0.HW']
+	EXCLUDES = ['.zip', '.ZIP', '.bin','.BIN', '.rar', '.MAP', '.BAK', '.BBX', '.tgz', '.DAT', '.SHL', 'TEST', '0.HW', '.xlsx']
 	for subdir, dirs, files in os.walk(rootdir):
 		for file in files:
 
